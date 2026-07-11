@@ -824,16 +824,6 @@ footer{
       </div>
     </div>
 
-    <div class="section open" data-section="meta">
-      <div class="section-header">
-        <span class="section-title">Response Meta</span>
-        <span class="arrow">▶</span>
-      </div>
-      <div class="section-body">
-        <div class="json-viewer" id="metaViewer"></div>
-      </div>
-    </div>
-
     <div class="section open" data-section="data">
       <div class="section-header">
         <span class="section-title">Payload</span>
@@ -1120,7 +1110,6 @@ footer{
   const searchBtn = document.getElementById('searchBtn');
   const loaderWrap = document.getElementById('loaderWrap');
   const resultCard = document.getElementById('resultCard');
-  const metaViewer = document.getElementById('metaViewer');
   const dataViewer = document.getElementById('dataViewer');
 
   let lastResult = null;
@@ -1134,8 +1123,6 @@ footer{
     setLoading(true);
     resultCard.classList.remove('active');
 
-    const startedAt = performance.now();
-
     // ================================================================
     // >>> PASTE_YOUR_API_HERE <<<
     // Replace the URL below with your own API endpoint.
@@ -1148,7 +1135,6 @@ footer{
 
     try {
       const response = await fetch(endpoint);
-      const elapsedMs = Math.round(performance.now() - startedAt);
 
       let payload;
       const contentType = response.headers.get('content-type') || '';
@@ -1164,32 +1150,16 @@ footer{
         };
       }
 
-      const meta = {
-        endpoint: endpoint,
-        status: response.status,
-        ok: response.ok,
-        elapsed_ms: elapsedMs,
-        timestamp: new Date().toISOString()
-      };
-
-      renderResult(meta, payload);
+      renderResult(payload);
       addToHistory(query.trim());
       showToast('Query executed successfully', 'info');
 
     } catch (err) {
-      const elapsedMs = Math.round(performance.now() - startedAt);
-      const meta = {
-        endpoint: endpoint,
-        status: 'network_error',
-        ok: false,
-        elapsed_ms: elapsedMs,
-        timestamp: new Date().toISOString()
-      };
       const payload = {
         error: 'Request failed. This demo targets a placeholder endpoint and may not resolve in your environment.',
         detail: String(err && err.message ? err.message : err)
       };
-      renderResult(meta, payload);
+      renderResult(payload);
       addToHistory(query.trim());
       showToast('Query failed — see result panel for details', 'error');
     } finally {
@@ -1197,9 +1167,8 @@ footer{
     }
   }
 
-  function renderResult(meta, payload) {
-    lastResult = { meta, payload };
-    metaViewer.innerHTML = syntaxHighlight(meta);
+  function renderResult(payload) {
+    lastResult = payload;
     dataViewer.innerHTML = syntaxHighlight(payload);
     resultCard.classList.add('active');
     resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
