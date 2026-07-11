@@ -1,110 +1,1348 @@
-import requests
-import json
-import time
-import sys
-import os
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 
-def clear_screen():
-    os.system('clear')
+<!-- ============================================================
+     SEO META TAGS
+     ============================================================ -->
+<title>PREM GUPTA // NEXUS Cyber Query Terminal</title>
+<meta name="description" content="PREM GUPTA presents NEXUS — a premium futuristic cyberpunk-themed data query terminal with a live Matrix rain background, glassmorphism UI, and a syntax-highlighted JSON viewer.">
+<meta name="keywords" content="Prem Gupta, cyberpunk, hacker terminal, matrix rain, json viewer, glassmorphism, query terminal">
+<meta name="author" content="Prem Gupta">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="PREM GUPTA // NEXUS Cyber Query Terminal">
+<meta property="og:description" content="A premium futuristic hacker-styled query terminal with live Matrix rain and JSON visualization, by Prem Gupta.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#00ff9c">
 
-def type_text(text, delay=0.03):
-    for char in text:
-        print(char, end='', flush=True)
-        time.sleep(delay)
-    print()
+<style>
+/* ============================================================
+   ROOT VARIABLES
+   ============================================================ */
+:root{
+  --neon: #00ff9c;
+  --neon-dim: #00c97a;
+  --neon-glow: rgba(0,255,156,0.55);
+  --bg: #030405;
+  --glass-bg: rgba(10, 18, 16, 0.45);
+  --glass-border: rgba(0,255,156,0.25);
+  --text-main: #d9fce9;
+  --text-dim: #7fa896;
+  --danger: #ff3b5c;
+  --warn: #ffd23b;
+  --font-display: 'Orbitron', 'Segoe UI', sans-serif;
+  --font-mono: 'Share Tech Mono', 'Consolas', monospace;
+}
 
-def hacker_intro():
-    clear_screen()
-    print("\033[1;32m")  # Green color
-    type_text("╔══════════════════════════════════════════════════╗")
-    type_text("║               OSINT BY PRINCIPAL                  ║")
-    type_text("║           PHONE NUMBER LOOKUP                   ║")
-    type_text("║             DEVELOPER: @PRIMEXTOUR                ║")
-    type_text("╚══════════════════════════════════════════════════╝")
-    print("\033[1;36m")  # Cyan color
-    type_text("[+] Initializing Phone Lookup System...")
-    time.sleep(1)
-    type_text("[+] Loading Database Modules...")
-    time.sleep(1)
-    type_text("[+] Connecting to Intelligence Network...")
-    time.sleep(1)
-    type_text("[+] Establishing Secure Connection...")
-    time.sleep(1)
-    print("\033[0m")  # Reset color
+/* ============================================================
+   FONT IMPORTS (self-hosted fallback via system stack if offline)
+   ============================================================ */
+@font-face{
+  font-family:'Orbitron';
+  src: local('Orbitron');
+}
 
-def fetch_number_info(number):
-    url = f"https://number-to-info-s0ry.onrender.com/lookup/{number}"
-    
-    try:
-        print(f"\033[1;33m[~] Scanning Target: {number}\033[0m")
-        time.sleep(1)
-        type_text(f"[~] Querying Database...", 0.02)
-        
-        response = requests.get(url, timeout=10)
-        
-        if response.status_code == 200:
-            print("\033[1;32m[+] Database Response Received\033[0m")
-            time.sleep(0.5)
-            return response.json()
-        else:
-            print(f"\033[1;31m[!] Database Error: HTTP {response.status_code}\033[0m")
-            return None
-            
-    except requests.exceptions.RequestException as e:
-        print(f"\033[1;31m[!] Network Error: {e}\033[0m")
-        return None
-    except json.JSONDecodeError:
-        print("\033[1;31m[!] Invalid Response Format\033[0m")
-        return None
+* { box-sizing: border-box; }
 
-def display_results(data, number):
-    print("\n" + "="*60)
-    print("\033[1;35m              PHONE NUMBER LOOKUP - RESULTS")
-    print("="*60 + "\033[0m")
-    
-    if not data or 'data' not in data or not data['data']:
-        print("\033[1;31m[!] NO DATA FOUND FOR THIS NUMBER\033[0m")
-        return
-    
-    records = data['data']
-    
-    for idx, record in enumerate(records, 1):
-        print(f"\033[1;32m📄 Record #{idx}")
-        
-        # Define display order and mapping
-        display_fields = [
-            ('name', '👤 Name'),
-            ('mobile', '📱 Mobile'),
-            ('fname', '👨‍👩‍👦 Father'),
-            ('alt', '📞 Alt Number'),
-            ('address', '🏠 Address'),
-            ('id', '🆔 Aadhar'),
-            ('circle', '🌐 Circle')
-        ]
-        
-        # Filter available fields (exclude credit field)
-        available_fields = []
-        for field_key, field_display in display_fields:
-            if field_key in record and record[field_key] and str(record[field_key]).strip() not in ['', 'null', 'None']:
-                available_fields.append((field_key, field_display, record[field_key]))
-        
-        if not available_fields:
-            print("\033[1;31m└ ❌ No data available\033[0m")
-            continue
-        
-        # Display available fields
-        for i, (field_key, field_display, value) in enumerate(available_fields):
-            prefix = "├" if i < len(available_fields) - 1 else "└"
-            
-            # Clean address field (remove !! separators)
-            if field_key == 'address':
-                value = value.replace('!!', ', ').replace('!NA!', '').replace('!', ' ')
-            
-            print(f"\033[1;32m{prefix} {field_display}: {value}\033[0m")
-            time.sleep(0.1)
-        
-        print()  # Empty line between records
+html, body {
+  margin:0; padding:0;
+  background:var(--bg);
+  color:var(--text-main);
+  font-family: var(--font-mono), monospace;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  scroll-behavior:smooth;
+}
 
-def hacker_animation():
-    animations = [
-        "[▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100% SCAN COMPLETE",
+/* ============================================================
+   CUSTOM SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar{ width:10px; }
+::-webkit-scrollbar-track{ background:#050807; }
+::-webkit-scrollbar-thumb{
+  background: linear-gradient(180deg, var(--neon), var(--neon-dim));
+  border-radius: 10px;
+  box-shadow: 0 0 8px var(--neon-glow);
+}
+::-webkit-scrollbar-thumb:hover{ background: var(--neon); }
+
+/* ============================================================
+   MATRIX RAIN CANVAS
+   ============================================================ */
+#matrixCanvas{
+  position:fixed;
+  top:0; left:0;
+  width:100vw; height:100vh;
+  z-index:0;
+  opacity:0.55;
+  pointer-events:none;
+}
+
+/* dark vignette overlay to keep foreground readable */
+.vignette{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background: radial-gradient(ellipse at center, rgba(3,4,5,0.15) 0%, rgba(3,4,5,0.85) 75%, rgba(3,4,5,0.98) 100%);
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.app{
+  position:relative;
+  z-index:2;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding: 28px 16px 60px;
+}
+
+/* ============================================================
+   LOGO / HEADER
+   ============================================================ */
+.logo-wrap{
+  text-align:center;
+  margin-bottom: 8px;
+  animation: fadeSlideDown 0.9s ease both;
+}
+
+.logo{
+  font-family: var(--font-display), var(--font-mono);
+  font-size: clamp(1.7rem, 7.5vw, 3.2rem);
+  letter-spacing: 5px;
+  font-weight:900;
+  color: var(--neon);
+  text-shadow:
+    0 0 6px var(--neon-glow),
+    0 0 18px var(--neon-glow),
+    0 0 40px rgba(0,255,156,0.35),
+    0 0 70px rgba(0,255,156,0.2);
+  position:relative;
+  display:inline-block;
+  animation: flicker 4.2s infinite;
+  white-space:nowrap;
+}
+
+.logo::before,
+.logo::after{
+  content: attr(data-text);
+  position:absolute;
+  left:2px; top:0;
+  z-index:-1;
+}
+
+.logo::before{
+  color: #ff2bd6;
+  opacity:0.5;
+  filter: blur(1.5px);
+  animation: glitchShift 5s infinite;
+}
+
+.logo::after{
+  color:#5be0ff;
+  opacity:0.35;
+  filter: blur(2px);
+  left:-2px;
+  animation: glitchShift 6.5s infinite reverse;
+}
+
+.logo-sub{
+  margin-top:6px;
+  font-size: 0.72rem;
+  letter-spacing: 4px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.logo-sub span{ color: var(--neon-dim); }
+
+@keyframes flicker{
+  0%, 96%, 100% { opacity:1; }
+  97% { opacity:0.55; }
+  98% { opacity:0.9; }
+  99% { opacity:0.4; }
+}
+
+@keyframes glitchShift{
+  0%, 90%, 100% { transform: translate(0,0); }
+  91% { transform: translate(-2px, 1px); }
+  93% { transform: translate(2px, -1px); }
+  95% { transform: translate(-1px, 0); }
+}
+
+@keyframes fadeSlideDown{
+  from { opacity:0; transform: translateY(-24px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* ============================================================
+   GLASSMORPHISM CARD BASE
+   ============================================================ */
+.card{
+  width:100%;
+  max-width: 640px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.55),
+    inset 0 0 0 1px rgba(255,255,255,0.02),
+    0 0 24px rgba(0,255,156,0.06);
+  padding: 26px;
+  margin-top: 22px;
+  animation: fadeSlideUp 0.8s ease both;
+}
+
+@keyframes fadeSlideUp{
+  from { opacity:0; transform: translateY(30px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* ============================================================
+   SEARCH FORM
+   ============================================================ */
+.search-card{ position:relative; }
+
+.field{
+  position:relative;
+  margin-bottom: 22px;
+}
+
+.field input{
+  width:100%;
+  background: rgba(0,10,8,0.55);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  padding: 18px 14px 8px;
+  outline:none;
+  transition: border-color .25s, box-shadow .25s;
+}
+
+.field input:focus{
+  border-color: var(--neon);
+  box-shadow: 0 0 0 3px rgba(0,255,156,0.12), 0 0 18px rgba(0,255,156,0.25);
+}
+
+.field label{
+  position:absolute;
+  left:14px;
+  top:16px;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  pointer-events:none;
+  transition: all .2s ease;
+  letter-spacing: 0.5px;
+}
+
+.field input:focus + label,
+.field input.filled + label{
+  top:4px;
+  font-size: 0.68rem;
+  color: var(--neon);
+  letter-spacing: 1.5px;
+  text-transform:uppercase;
+}
+
+.field .hint{
+  margin-top:6px;
+  font-size:0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  padding-left:2px;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-row{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  position:relative;
+  overflow:hidden;
+  border:none;
+  cursor:pointer;
+  font-family: var(--font-display), var(--font-mono);
+  letter-spacing: 2px;
+  font-weight:700;
+  text-transform:uppercase;
+  border-radius: 12px;
+  transition: transform .15s ease, box-shadow .25s ease, background .25s;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  user-select:none;
+}
+
+.btn:active{ transform: scale(0.97); }
+
+.btn-primary{
+  flex:1 1 auto;
+  min-width: 200px;
+  padding: 16px 20px;
+  font-size: 0.95rem;
+  background: linear-gradient(135deg, var(--neon), var(--neon-dim));
+  color: #01130c;
+  box-shadow: 0 0 20px rgba(0,255,156,0.4), 0 4px 14px rgba(0,0,0,0.4);
+}
+
+.btn-primary:hover{
+  box-shadow: 0 0 32px rgba(0,255,156,0.65), 0 4px 18px rgba(0,0,0,0.5);
+}
+
+.btn-primary:disabled{
+  opacity:0.55;
+  cursor:not-allowed;
+  filter:grayscale(0.3);
+}
+
+.btn-ghost{
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  background: rgba(255,255,255,0.03);
+  color: var(--text-dim);
+  border: 1px solid var(--glass-border);
+}
+
+.btn-ghost:hover{
+  color: var(--neon);
+  border-color: var(--neon);
+  background: rgba(0,255,156,0.06);
+}
+
+.btn-danger:hover{
+  color: var(--danger);
+  border-color: var(--danger);
+  background: rgba(255,59,92,0.08);
+}
+
+/* ripple effect */
+.ripple{
+  position:absolute;
+  border-radius:50%;
+  background: rgba(255,255,255,0.5);
+  transform: scale(0);
+  animation: rippleAnim 0.6s ease-out;
+  pointer-events:none;
+}
+
+@keyframes rippleAnim{
+  to { transform: scale(3.2); opacity:0; }
+}
+
+/* ============================================================
+   LOADING ANIMATION
+   ============================================================ */
+.loader-wrap{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+  padding: 30px 0 10px;
+}
+
+.loader-wrap.active{ display:flex; }
+
+.loader-ring{
+  width:64px; height:64px;
+  position:relative;
+}
+
+.loader-ring div{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:3px solid transparent;
+  border-top-color: var(--neon);
+  animation: spin 1s linear infinite;
+}
+
+.loader-ring div:nth-child(2){
+  inset:8px;
+  border-top-color: var(--neon-dim);
+  animation-duration: 0.7s;
+  animation-direction: reverse;
+}
+
+.loader-ring div:nth-child(3){
+  inset:16px;
+  border-top-color: #ff2bd6;
+  animation-duration: 1.4s;
+}
+
+@keyframes spin{ to { transform: rotate(360deg); } }
+
+.loader-text{
+  font-size:0.75rem;
+  letter-spacing:3px;
+  color: var(--neon-dim);
+  text-transform:uppercase;
+  animation: pulseText 1.4s infinite;
+}
+
+@keyframes pulseText{
+  0%,100%{ opacity:0.4; }
+  50%{ opacity:1; }
+}
+
+/* ============================================================
+   RESULT PANEL
+   ============================================================ */
+.result-card{ display:none; }
+.result-card.active{ display:block; animation: fadeSlideUp 0.5s ease both; }
+
+.result-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom: 16px;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.result-title{
+  font-family: var(--font-display), var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing:2px;
+  color: var(--neon);
+  text-transform:uppercase;
+}
+
+.result-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+
+.result-actions .btn-ghost{
+  padding: 8px 12px;
+  font-size: 0.65rem;
+}
+
+/* Collapsible section */
+.section{
+  border:1px solid var(--glass-border);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow:hidden;
+  background: rgba(0,10,8,0.3);
+}
+
+.section-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding: 12px 16px;
+  cursor:pointer;
+  user-select:none;
+  transition: background .2s;
+}
+
+.section-header:hover{ background: rgba(0,255,156,0.05); }
+
+.section-header .arrow{
+  transition: transform .25s ease;
+  color: var(--neon-dim);
+}
+
+.section.open .arrow{ transform: rotate(90deg); }
+
+.section-title{
+  font-size:0.8rem;
+  letter-spacing:1px;
+  color: var(--text-main);
+  text-transform:uppercase;
+}
+
+.section-body{
+  max-height:0;
+  overflow:hidden;
+  transition: max-height .3s ease;
+}
+
+.section.open .section-body{ max-height: 1200px; }
+
+/* ============================================================
+   JSON VIEWER
+   ============================================================ */
+.json-viewer{
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height:1.55;
+  padding: 14px 16px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-main);
+}
+
+.json-key{ color:#5be0ff; }
+.json-string{ color: var(--neon); }
+.json-number{ color: var(--warn); }
+.json-boolean{ color:#ff2bd6; font-weight:bold; }
+.json-null{ color: var(--danger); font-style: italic; }
+.json-punc{ color: var(--text-dim); }
+
+/* ============================================================
+   TOAST NOTIFICATIONS
+   ============================================================ */
+.toast-stack{
+  position:fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-width: calc(100vw - 40px);
+}
+
+.toast{
+  min-width: 220px;
+  max-width: 320px;
+  background: rgba(6,14,11,0.9);
+  border:1px solid var(--glass-border);
+  border-left: 4px solid var(--neon);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.78rem;
+  color: var(--text-main);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 14px rgba(0,255,156,0.15);
+  animation: toastIn 0.35s ease both;
+  backdrop-filter: blur(8px);
+}
+
+.toast.error{ border-left-color: var(--danger); }
+.toast.warn{ border-left-color: var(--warn); }
+
+.toast.hide{ animation: toastOut 0.35s ease forwards; }
+
+@keyframes toastIn{
+  from{ opacity:0; transform: translateX(40px); }
+  to{ opacity:1; transform: translateX(0); }
+}
+@keyframes toastOut{
+  to{ opacity:0; transform: translateX(60px); }
+}
+
+/* ============================================================
+   HISTORY PANEL
+   ============================================================ */
+.history-card .hist-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  max-height: 220px;
+  overflow-y:auto;
+  padding-right:4px;
+}
+
+.hist-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding: 10px 12px;
+  border:1px solid var(--glass-border);
+  border-radius:10px;
+  background: rgba(0,10,8,0.3);
+  cursor:pointer;
+  transition: border-color .2s, background .2s;
+  font-size:0.8rem;
+}
+
+.hist-item:hover{
+  border-color: var(--neon);
+  background: rgba(0,255,156,0.05);
+}
+
+.hist-item .hist-q{ color: var(--text-main); }
+.hist-item .hist-t{ color: var(--text-dim); font-size:0.65rem; }
+
+.empty-note{
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  text-align:center;
+  padding: 10px 0;
+}
+
+/* ============================================================
+   KEYBOARD HINT BAR
+   ============================================================ */
+.kbd-hint{
+  margin-top: 22px;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  letter-spacing:1px;
+  text-align:center;
+}
+
+.kbd-hint kbd{
+  background: rgba(255,255,255,0.06);
+  border:1px solid var(--glass-border);
+  border-radius:4px;
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  color: var(--neon-dim);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer{
+  margin-top: 30px;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing:2px;
+  text-align:center;
+  opacity:0.7;
+}
+
+/* ============================================================
+   POPUP AD MODAL
+   ============================================================ */
+.popup-backdrop{
+  position:fixed;
+  inset:0;
+  z-index: 1000;
+  background: rgba(2,4,4,0.72);
+  backdrop-filter: blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 20px;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .35s ease;
+}
+
+.popup-backdrop.show{
+  opacity:1;
+  pointer-events:all;
+}
+
+.popup-card{
+  position:relative;
+  width:100%;
+  max-width: 420px;
+  background: linear-gradient(160deg, rgba(6,16,13,0.92), rgba(4,10,9,0.96));
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 30px 26px 26px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(0,255,156,0.08),
+    0 0 50px rgba(0,255,156,0.18);
+  transform: scale(0.85) translateY(30px);
+  opacity:0;
+  transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .4s ease;
+  overflow:hidden;
+}
+
+.popup-backdrop.show .popup-card{
+  transform: scale(1) translateY(0);
+  opacity:1;
+}
+
+.popup-card::before{
+  content:"";
+  position:absolute;
+  top:-40%; left:-40%;
+  width:180%; height:180%;
+  background: conic-gradient(from 0deg, transparent, rgba(0,255,156,0.12), transparent 30%);
+  animation: rotateGlow 6s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes rotateGlow{ to{ transform: rotate(360deg); } }
+
+.popup-close{
+  position:absolute;
+  top:14px; right:14px;
+  width:30px; height:30px;
+  border-radius:50%;
+  border:1px solid var(--glass-border);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-dim);
+  font-size:0.95rem;
+  line-height:1;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition: all .2s;
+  z-index:2;
+}
+
+.popup-close:hover{
+  color: var(--danger);
+  border-color: var(--danger);
+  transform: rotate(90deg);
+}
+
+.popup-badge{
+  display:inline-block;
+  font-size:0.6rem;
+  letter-spacing:2px;
+  color:#01130c;
+  background: linear-gradient(135deg, var(--warn), #ff9a3b);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight:800;
+  margin-bottom: 14px;
+  position:relative;
+  z-index:2;
+}
+
+.popup-icon{
+  font-size: 2.4rem;
+  text-align:center;
+  margin-bottom: 10px;
+  position:relative;
+  z-index:2;
+  animation: iconFloat 2.4s ease-in-out infinite;
+}
+
+@keyframes iconFloat{
+  0%,100%{ transform: translateY(0); }
+  50%{ transform: translateY(-6px); }
+}
+
+.popup-title{
+  font-family: var(--font-display), var(--font-mono);
+  font-size: 1.25rem;
+  letter-spacing:1px;
+  color: var(--neon);
+  text-align:center;
+  margin-bottom: 8px;
+  text-shadow: 0 0 14px var(--neon-glow);
+  position:relative;
+  z-index:2;
+}
+
+.popup-text{
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  text-align:center;
+  line-height:1.6;
+  margin-bottom: 20px;
+  position:relative;
+  z-index:2;
+}
+
+.popup-text strong{ color: var(--text-main); }
+
+.popup-actions{
+  display:flex;
+  gap:10px;
+  position:relative;
+  z-index:2;
+}
+
+.popup-actions .btn{ flex:1; padding: 13px 16px; font-size:0.78rem; }
+
+.popup-footnote{
+  margin-top:14px;
+  text-align:center;
+  font-size:0.62rem;
+  color: var(--text-dim);
+  opacity:0.7;
+  letter-spacing:0.5px;
+  position:relative;
+  z-index:2;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 480px){
+  .card{ padding: 18px; border-radius:14px; }
+  .btn-primary{ min-width: 100%; }
+  .logo{ letter-spacing: 3px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Matrix rain background -->
+<canvas id="matrixCanvas"></canvas>
+<div class="vignette"></div>
+
+<div class="app">
+
+  <!-- ============================================================
+       LOGO / HEADER
+       ============================================================ -->
+  <div class="logo-wrap">
+    <div class="logo" data-text="PREM GUPTA">PREM GUPTA</div>
+    <div class="logo-sub">NEXUS CYBER QUERY <span>TERMINAL</span> v3.0</div>
+  </div>
+
+  <!-- ============================================================
+       SEARCH CARD
+       ============================================================ -->
+  <div class="card search-card">
+    <form id="searchForm" autocomplete="off">
+      <div class="field">
+        <input type="text" id="queryInput" name="query" required placeholder=" " />
+        <label for="queryInput">Enter query string</label>
+        <div class="hint">Query is sent to a placeholder endpoint for demonstration purposes.</div>
+      </div>
+
+      <div class="btn-row">
+        <button type="submit" class="btn btn-primary" id="searchBtn">
+          <span>▶ Execute Query</span>
+        </button>
+        <button type="button" class="btn btn-ghost btn-danger" id="clearBtn">Clear</button>
+      </div>
+    </form>
+
+    <!-- Loading animation -->
+    <div class="loader-wrap" id="loaderWrap">
+      <div class="loader-ring"><div></div><div></div><div></div></div>
+      <div class="loader-text">Establishing secure channel...</div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       RESULT CARD
+       ============================================================ -->
+  <div class="card result-card" id="resultCard">
+    <div class="result-head">
+      <div class="result-title">// Query Result</div>
+      <div class="result-actions">
+        <button class="btn btn-ghost" id="copyBtn">⧉ Copy</button>
+        <button class="btn btn-ghost" id="downloadBtn">⬇ Download</button>
+      </div>
+    </div>
+
+    <div class="section open" data-section="meta">
+      <div class="section-header">
+        <span class="section-title">Response Meta</span>
+        <span class="arrow">▶</span>
+      </div>
+      <div class="section-body">
+        <div class="json-viewer" id="metaViewer"></div>
+      </div>
+    </div>
+
+    <div class="section open" data-section="data">
+      <div class="section-header">
+        <span class="section-title">Payload</span>
+        <span class="arrow">▶</span>
+      </div>
+      <div class="section-body">
+        <div class="json-viewer" id="dataViewer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       HISTORY CARD
+       ============================================================ -->
+  <div class="card history-card">
+    <div class="result-head">
+      <div class="result-title">// Search History</div>
+      <div class="result-actions">
+        <button class="btn btn-ghost btn-danger" id="clearHistBtn">Clear All</button>
+      </div>
+    </div>
+    <div class="hist-list" id="histList">
+      <div class="empty-note" id="histEmpty">No history yet. Run a query to populate this list.</div>
+    </div>
+  </div>
+
+  <div class="kbd-hint">
+    <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to submit &nbsp;•&nbsp; <kbd>Ctrl</kbd>+<kbd>L</kbd> to clear
+  </div>
+
+  <footer>NEXUS TERMINAL &copy; 2026 — DEMO INTERFACE, NO LIVE DATA SOURCE ATTACHED</footer>
+</div>
+
+<!-- Toast stack -->
+<div class="toast-stack" id="toastStack"></div>
+
+<!-- ============================================================
+     PROMO POPUP AD
+     ============================================================ -->
+<div class="popup-backdrop" id="popupBackdrop">
+  <div class="popup-card">
+    <button class="popup-close" id="popupClose" aria-label="Close">✕</button>
+    <div class="popup-badge">⚡ LIMITED ACCESS</div>
+    <div class="popup-icon">🛰️</div>
+    <div class="popup-title">PREM GUPTA // NEXUS PRO</div>
+    <div class="popup-text">
+      Unlock <strong>faster query channels</strong>, saved presets, and priority terminal themes.
+      Built and maintained by <strong>Prem Gupta</strong>.
+    </div>
+    <div class="popup-actions">
+      <button class="btn btn-ghost" id="popupDismiss">Maybe Later</button>
+      <button class="btn btn-primary" id="popupCta"><span>Explore NEXUS Pro</span></button>
+    </div>
+    <div class="popup-footnote">This is a demo promotional popup — no external link is triggered.</div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   NEXUS TERMINAL — CLIENT SCRIPT
+   Single-file cyberpunk query UI.
+   No external libraries. No personal-data retrieval implemented.
+   ================================================================ */
+
+(function () {
+  'use strict';
+
+  /* --------------------------------------------------------------
+     1. MATRIX RAIN BACKGROUND
+     -------------------------------------------------------------- */
+  const canvas = document.getElementById('matrixCanvas');
+  const ctx = canvas.getContext('2d');
+  const GLYPHS = 'アイウエオカキクケコサシスセソ0123456789ABCDEFXYZ$#%&';
+  let columns, drops, fontSize = 16;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    columns = Math.floor(canvas.width / fontSize);
+    drops = new Array(columns).fill(1).map(() => Math.random() * -50);
+  }
+
+  function drawMatrix() {
+    ctx.fillStyle = 'rgba(3,4,5,0.14)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < columns; i++) {
+      const char = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+
+      // leading glyph brighter
+      ctx.fillStyle = '#c9fff0';
+      ctx.fillText(char, x, y);
+
+      ctx.fillStyle = 'rgba(0,255,156,0.55)';
+      ctx.fillText(GLYPHS[Math.floor(Math.random() * GLYPHS.length)], x, y - fontSize);
+
+      if (y > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  setInterval(drawMatrix, 45);
+
+  /* --------------------------------------------------------------
+     2. TOAST NOTIFICATIONS
+     -------------------------------------------------------------- */
+  const toastStack = document.getElementById('toastStack');
+
+  function showToast(message, type = 'info', duration = 3200) {
+    const el = document.createElement('div');
+    el.className = 'toast' + (type === 'error' ? ' error' : type === 'warn' ? ' warn' : '');
+    el.textContent = message;
+    toastStack.appendChild(el);
+
+    setTimeout(() => {
+      el.classList.add('hide');
+      setTimeout(() => el.remove(), 350);
+    }, duration);
+  }
+
+  /* --------------------------------------------------------------
+     3. FLOATING LABEL INPUT STATE
+     -------------------------------------------------------------- */
+  const queryInput = document.getElementById('queryInput');
+
+  function syncFilledState() {
+    if (queryInput.value.trim().length > 0) {
+      queryInput.classList.add('filled');
+    } else {
+      queryInput.classList.remove('filled');
+    }
+  }
+  queryInput.addEventListener('input', syncFilledState);
+  syncFilledState();
+
+  /* --------------------------------------------------------------
+     4. RIPPLE EFFECT ON BUTTONS
+     -------------------------------------------------------------- */
+  function attachRipple(button) {
+    button.addEventListener('click', function (e) {
+      const rect = button.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      const size = Math.max(rect.width, rect.height);
+      ripple.className = 'ripple';
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+      ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+      button.style.position = button.style.position || 'relative';
+      button.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 650);
+    });
+  }
+  document.querySelectorAll('.btn').forEach(attachRipple);
+
+  /* --------------------------------------------------------------
+     5. JSON SYNTAX HIGHLIGHTING
+     -------------------------------------------------------------- */
+  function syntaxHighlight(json) {
+    const jsonStr = JSON.stringify(json, null, 2)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    return jsonStr.replace(
+      /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|null|-?\d+(\.\d+)?([eE][+-]?\d+)?)/g,
+      function (match) {
+        let cls = 'json-number';
+        if (/^"/.test(match)) {
+          cls = /:$/.test(match) ? 'json-key' : 'json-string';
+        } else if (/true|false/.test(match)) {
+          cls = 'json-boolean';
+        } else if (/null/.test(match)) {
+          cls = 'json-null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+      }
+    ).replace(/[{}\[\],]/g, function (p) {
+      return '<span class="json-punc">' + p + '</span>';
+    });
+  }
+
+  /* --------------------------------------------------------------
+     6. COLLAPSIBLE SECTIONS
+     -------------------------------------------------------------- */
+  document.querySelectorAll('.section-header').forEach(header => {
+    header.addEventListener('click', () => {
+      header.closest('.section').classList.toggle('open');
+    });
+  });
+
+  /* --------------------------------------------------------------
+     7. SEARCH HISTORY (LocalStorage)
+     -------------------------------------------------------------- */
+  const HISTORY_KEY = 'nexus_search_history_v1';
+  const MAX_HISTORY = 20;
+
+  function loadHistory() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveHistory(list) {
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+    } catch (e) {
+      showToast('Could not persist history (storage unavailable)', 'warn');
+    }
+  }
+
+  function addToHistory(query) {
+    let list = loadHistory();
+    list = list.filter(item => item.query !== query);
+    list.unshift({ query, time: new Date().toISOString() });
+    if (list.length > MAX_HISTORY) list = list.slice(0, MAX_HISTORY);
+    saveHistory(list);
+    renderHistory();
+  }
+
+  function formatTime(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function renderHistory() {
+    const list = loadHistory();
+    const container = document.getElementById('histList');
+    const emptyNote = document.getElementById('histEmpty');
+
+    container.innerHTML = '';
+
+    if (list.length === 0) {
+      container.appendChild(emptyNote);
+      return;
+    }
+
+    list.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'hist-item';
+      row.innerHTML =
+        '<span class="hist-q">' + escapeHtml(item.query) + '</span>' +
+        '<span class="hist-t">' + formatTime(item.time) + '</span>';
+      row.addEventListener('click', () => {
+        queryInput.value = item.query;
+        syncFilledState();
+        runQuery(item.query);
+      });
+      container.appendChild(row);
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  document.getElementById('clearHistBtn').addEventListener('click', () => {
+    saveHistory([]);
+    renderHistory();
+    showToast('History cleared');
+  });
+
+  renderHistory();
+
+  /* --------------------------------------------------------------
+     8. CORE QUERY LOGIC
+     NOTE: This uses a placeholder endpoint only. No personal-data
+     retrieval logic is implemented. Replace the endpoint with your
+     own legitimate, consented data source.
+     -------------------------------------------------------------- */
+  const form = document.getElementById('searchForm');
+  const searchBtn = document.getElementById('searchBtn');
+  const loaderWrap = document.getElementById('loaderWrap');
+  const resultCard = document.getElementById('resultCard');
+  const metaViewer = document.getElementById('metaViewer');
+  const dataViewer = document.getElementById('dataViewer');
+
+  let lastResult = null;
+
+  async function runQuery(query) {
+    if (!query || !query.trim()) {
+      showToast('Please enter a query before executing.', 'warn');
+      return;
+    }
+
+    setLoading(true);
+    resultCard.classList.remove('active');
+
+    const startedAt = performance.now();
+
+    // ================================================================
+    // >>> PASTE_YOUR_API_HERE <<<
+    // Replace the URL below with your own API endpoint.
+    // Example: 'https://your-api.com/lookup/' + encodeURIComponent(query)
+    // ================================================================
+    const endpoint = 'https://number-to-info-s0ry.onrender.com/lookup/{number}' + encodeURIComponent(query);
+    // ================================================================
+    // >>> END_PASTE_YOUR_API_HERE <<<
+    // ================================================================
+
+    try {
+      const response = await fetch(endpoint);
+      const elapsedMs = Math.round(performance.now() - startedAt);
+
+      let payload;
+      const contentType = response.headers.get('content-type') || '';
+
+      if (contentType.includes('application/json')) {
+        payload = await response.json();
+      } else {
+        // Placeholder endpoint may not return real JSON —
+        // synthesize a demo payload so the UI can be exercised.
+        payload = {
+          note: 'Placeholder endpoint reached. Replace with a real API for live data.',
+          query: query
+        };
+      }
+
+      const meta = {
+        endpoint: endpoint,
+        status: response.status,
+        ok: response.ok,
+        elapsed_ms: elapsedMs,
+        timestamp: new Date().toISOString()
+      };
+
+      renderResult(meta, payload);
+      addToHistory(query.trim());
+      showToast('Query executed successfully', 'info');
+
+    } catch (err) {
+      const elapsedMs = Math.round(performance.now() - startedAt);
+      const meta = {
+        endpoint: endpoint,
+        status: 'network_error',
+        ok: false,
+        elapsed_ms: elapsedMs,
+        timestamp: new Date().toISOString()
+      };
+      const payload = {
+        error: 'Request failed. This demo targets a placeholder endpoint and may not resolve in your environment.',
+        detail: String(err && err.message ? err.message : err)
+      };
+      renderResult(meta, payload);
+      addToHistory(query.trim());
+      showToast('Query failed — see result panel for details', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function renderResult(meta, payload) {
+    lastResult = { meta, payload };
+    metaViewer.innerHTML = syntaxHighlight(meta);
+    dataViewer.innerHTML = syntaxHighlight(payload);
+    resultCard.classList.add('active');
+    resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function setLoading(isLoading) {
+    if (isLoading) {
+      loaderWrap.classList.add('active');
+      searchBtn.disabled = true;
+    } else {
+      loaderWrap.classList.remove('active');
+      searchBtn.disabled = false;
+    }
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    runQuery(queryInput.value);
+  });
+
+  /* --------------------------------------------------------------
+     9. CLEAR BUTTON
+     -------------------------------------------------------------- */
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    queryInput.value = '';
+    syncFilledState();
+    resultCard.classList.remove('active');
+    lastResult = null;
+    showToast('Cleared');
+    queryInput.focus();
+  });
+
+  /* --------------------------------------------------------------
+     10. COPY / DOWNLOAD JSON
+     -------------------------------------------------------------- */
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    if (!lastResult) {
+      showToast('Nothing to copy yet', 'warn');
+      return;
+    }
+    const text = JSON.stringify(lastResult, null, 2);
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Copied JSON to clipboard');
+    } catch (e) {
+      // fallback for older browsers
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      showToast('Copied JSON to clipboard');
+    }
+  });
+
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    if (!lastResult) {
+      showToast('Nothing to download yet', 'warn');
+      return;
+    }
+    const text = JSON.stringify(lastResult, null, 2);
+    const blob = new Blob([text], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'nexus-result-' + Date.now() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('Download started');
+  });
+
+  /* --------------------------------------------------------------
+     11. KEYBOARD SHORTCUTS
+     -------------------------------------------------------------- */
+  document.addEventListener('keydown', (e) => {
+    const isCtrl = e.ctrlKey || e.metaKey;
+
+    if (isCtrl && e.key === 'Enter') {
+      e.preventDefault();
+      runQuery(queryInput.value);
+    }
+
+    if (isCtrl && (e.key === 'l' || e.key === 'L')) {
+      e.preventDefault();
+      document.getElementById('clearBtn').click();
+    }
+  });
+
+  /* --------------------------------------------------------------
+     12. INITIAL FOCUS
+     -------------------------------------------------------------- */
+  window.addEventListener('load', () => {
+    queryInput.focus();
+  });
+
+  /* --------------------------------------------------------------
+     13. PROMO POPUP AD
+     Shows once per session after a short delay. Purely
+     presentational — no tracking, no external navigation.
+     -------------------------------------------------------------- */
+  const POPUP_SEEN_KEY = 'nexus_popup_seen_v1';
+  const popupBackdrop = document.getElementById('popupBackdrop');
+  const popupClose = document.getElementById('popupClose');
+  const popupDismiss = document.getElementById('popupDismiss');
+  const popupCta = document.getElementById('popupCta');
+
+  function openPopup() {
+    popupBackdrop.classList.add('show');
+  }
+
+  function closePopup() {
+    popupBackdrop.classList.remove('show');
+    try { sessionStorage.setItem(POPUP_SEEN_KEY, '1'); } catch (e) {}
+  }
+
+  popupClose.addEventListener('click', closePopup);
+  popupDismiss.addEventListener('click', closePopup);
+  popupBackdrop.addEventListener('click', (e) => {
+    if (e.target === popupBackdrop) closePopup();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && popupBackdrop.classList.contains('show')) closePopup();
+  });
+
+  popupCta.addEventListener('click', () => {
+    closePopup();
+    showToast('NEXUS Pro is a demo feature — no live upgrade flow attached.', 'warn');
+  });
+
+  [popupClose, popupDismiss, popupCta].forEach(attachRipple);
+
+  window.addEventListener('load', () => {
+    let alreadySeen = false;
+    try { alreadySeen = sessionStorage.getItem(POPUP_SEEN_KEY) === '1'; } catch (e) {}
+    if (!alreadySeen) {
+      setTimeout(openPopup, 1800);
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
